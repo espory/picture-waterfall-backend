@@ -23,7 +23,7 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --port 8000 --daemon --title=egg-server-picture-waterfall-backend",
+    "start": "egg-scripts start --port 8000 --title=egg-server-picture-waterfall-backend",
     "stop": "egg-scripts stop --title=egg-server-picture-waterfall-backend",
     "dev": "egg-bin dev --port 8000",
     "debug": "egg-bin debug",
