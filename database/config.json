@@ -1,0 +1,18 @@
+{
+  "test": {
+    "dialect": "mysql",
+    "host": "101.43.119.45",
+    "username": "root",
+    "password": "curidemo",
+    "port": 3306,
+    "database": "picture-waterfall-unittest"
+  },
+  "development": {
+    "dialect": "mysql",
+    "host": "101.43.119.45",
+    "username": "root",
+    "password": "curidemo",
+    "port": 3306,
+    "database": "picture-waterfall"
+  }
+}

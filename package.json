@@ -9,7 +9,9 @@
   "dependencies": {
     "commitizen": "^4.3.0",
     "egg": "^3",
-    "egg-scripts": "^2"
+    "egg-scripts": "^2",
+    "egg-sequelize": "^6.0.0",
+    "mysql2": "^3.1.0"
   },
   "devDependencies": {
     "cz-conventional-changelog": "^3.3.0",
@@ -17,7 +19,9 @@
     "egg-ci": "^2",
     "egg-mock": "^5",
     "eslint": "^8",
-    "eslint-config-egg": "^12"
+    "eslint-config-egg": "^12",
+    "factory-girl": "^5.0.4",
+    "sequelize-cli": "^6.6.0"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -31,7 +35,7 @@
     "test-local": "egg-bin test",
     "cov": "egg-bin cov",
     "lint": "eslint .",
-    "ci": "npm run lint && npm run cov",
+    "ci": "npm run lint && NODE_ENV=test npx sequelize db:migrate && npm run cov",
     "cz": "git add . && git cz"
   },
   "ci": {

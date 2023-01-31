@@ -17,7 +17,7 @@ module.exports = appInfo => {
       username: 'root',
       password: 'curidemo',
       port: 3306,
-      database: 'picture-waterfall',
+      database: 'picture-waterfall-unittest',
     },
   };
 
