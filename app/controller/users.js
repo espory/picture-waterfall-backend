@@ -1,5 +1,5 @@
-// app/controller/users.js
-const Controller = require('egg').Controller;
+// egg 官网示范 demo，与实际项目无关
+const { Controller } = require('egg');
 
 function toInt(str) {
   if (typeof str === 'number') return str;
