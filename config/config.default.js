@@ -33,6 +33,12 @@ module.exports = appInfo => {
       fileSize: '50mb',
       // 允许上传的最大文件数
       files: 20,
+      cleanSchedule: {
+        // run tmpdir clean job on every day 04:30 am
+        // cron style see https://github.com/eggjs/egg-schedule#cron-style-scheduling
+        cron: '0 30 4 * * *',
+        disable: false,
+      },
     },
     static: {
       prefix: '/',

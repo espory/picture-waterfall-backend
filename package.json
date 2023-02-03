@@ -37,7 +37,10 @@
     "cov": "egg-bin cov",
     "lint": "eslint .",
     "ci": "npm run lint && NODE_ENV=test npx sequelize db:migrate && npm run cov",
-    "cz": "git add . && git cz"
+    "cz": "git add . && git cz",
+    "mg": "sequelize db:migrate",
+    "mgu":"sequelize db:migrate",
+    "mgc":"sequelize migration:create"
   },
   "ci": {
     "version": "16, 18",
