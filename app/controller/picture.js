@@ -1,5 +1,5 @@
 /*
- * @LastEditTime: 2023-02-02 14:38:33
+ * @LastEditTime: 2023-02-04 20:02:11
  * @FilePath: /picture-waterfull/picture-waterfall-backend/app/controller/picture.js
  * @Description:
  *
@@ -7,7 +7,27 @@
 const { Controller } = require('egg');
 const path = require('path');
 const fs = require('fs');
+function toInt(str) {
+  if (typeof str === 'number') return str;
+  if (!str) return str;
+  return parseInt(str, 10) || 0;
+}
 class PictureController extends Controller {
+  async get() {
+    const { ctx } = this;
+    const { limit, offset } = ctx.query;
+    const query = {
+      limit: toInt(limit),
+      offset: toInt(offset),
+    };
+    console.log(query);
+    const res = await ctx.model.File.findAll(query);
+    console.log(res.length);
+    ctx.body = {
+      data: res,
+      done: res.length < query.limit,
+    };
+  }
   async upload() {
     const { ctx } = this;
     console.log(ctx.request.body);
