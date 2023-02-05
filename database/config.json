@@ -7,7 +7,15 @@
     "port": 3306,
     "database": "picture-waterfall-unittest"
   },
-  "development": {
+  "local": {
+    "dialect": "mysql",
+    "host": "101.43.119.45",
+    "username": "root",
+    "password": "curidemo",
+    "port": 3306,
+    "database": "picture-waterfall-unittest"
+  },
+  "prod": {
     "dialect": "mysql",
     "host": "101.43.119.45",
     "username": "root",
