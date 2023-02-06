@@ -18,4 +18,4 @@ jobs:
         run: |
           if [ $(docker ps -aq --filter name=${{ env.WEBAPP_NAME }}_container) ]; then docker rm -f ${{ env.WEBAPP_NAME }}_container;fi
           docker build -t ${{ env.WEBAPP_NAME }} .
-          docker run -d -p ${{ env.RUN_PORT }}:8000 -v $HOME/picture-waterfall-files:/root/picture-waterfall-files --name ${{ env.WEBAPP_NAME }}_container ${{ env.WEBAPP_NAME }}
+          docker run -d -p ${{ env.RUN_PORT }}:8000 -v /home/ubuntu/picture-waterfall-files:/root/picture-waterfall-files --name ${{ env.WEBAPP_NAME }}_container ${{ env.WEBAPP_NAME }}
