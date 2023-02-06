@@ -1,10 +1,5 @@
-/*
- * @LastEditTime: 2023-02-04 20:02:11
- * @FilePath: /picture-waterfull/picture-waterfall-backend/app/controller/picture.js
- * @Description:
- *
- */
 const { Controller } = require('egg');
+const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 function toInt(str) {
@@ -66,6 +61,11 @@ class PictureController extends Controller {
         const readStream = fs.createReadStream(sourcePath);
         const writeStream = fs.createWriteStream(destPath);
         readStream.pipe(writeStream);
+        // 图片压缩 gif 压缩成本过高，暂不处理
+        if(path.extname(filename).toLocaleLowerCase()!=='.gif'){
+          const toPath = path.join(path.dirname(destPath),`small-${filename}`)
+          sharp(sourcePath).resize(1080).jpeg({ mozjpeg: true }).toFile(toPath)
+        }
         // 数据库新增条目
         const pic = await ctx.model.File.create({ username, path: filename, title, intro, type, other, status });
         console.log(pic);

@@ -12,7 +12,8 @@
     "egg-cors": "^2.2.3",
     "egg-scripts": "^2",
     "egg-sequelize": "^6.0.0",
-    "mysql2": "^3.1.0"
+    "mysql2": "^3.1.0",
+    "sharp": "^0.31.3"
   },
   "devDependencies": {
     "cz-conventional-changelog": "^3.3.0",
@@ -40,8 +41,8 @@
     "cz": "git add . && git cz",
     "mg": "sequelize db:migrate",
     "mgl": "NODE_ENV=local sequelize db:migrate",
-    "mgu":"sequelize db:migrate:undo:all",
-    "mgc":"sequelize migration:create"
+    "mgu": "sequelize db:migrate:undo:all",
+    "mgc": "sequelize migration:create"
   },
   "ci": {
     "version": "16, 18",
