@@ -13,5 +13,6 @@ module.exports = app => {
   router.post('/pic/upload', controller.picture.upload);
   router.post('/pic/create', controller.picture.create);
   router.post('/pic/del', controller.picture.del);
+  router.post('/pic/update', controller.picture.update);
   router.resources('users', '/users', controller.users);
 };

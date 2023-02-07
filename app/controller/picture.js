@@ -37,6 +37,20 @@ class PictureController extends Controller {
       data: res.length
     };
   }
+
+  async update(){
+    const { ctx } = this;
+    const { id, attrName, value } = ctx.request.body;
+    console.log(id, attrName, value);
+    const pic = await ctx.model.File.findByPk(id);
+    if (!pic) {
+      ctx.status = 404;
+      ctx.body = '数据库无此条目'
+      return;
+    }
+    await pic.update({ [attrName]:value });
+    ctx.body = pic;
+  }
   async del(){
     const { ctx,config } = this;
     const {id} = ctx.request.body;
