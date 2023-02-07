@@ -10,11 +10,17 @@ function toInt(str) {
 class PictureController extends Controller {
   async get() {
     const { ctx } = this;
-    const { limit, offset } = ctx.query;
+    const { limit, offset, isAdmin=false } = ctx.query;
     const query = {
       limit: toInt(limit),
       offset: toInt(offset),
     };
+    //用户侧只返回审核通过的图片
+    if(!isAdmin){
+      query['where'] = {
+        status: 'pass'
+      }
+    }
     console.log(query);
     const res = await ctx.model.File.findAll(query);
     console.log(res.length);
@@ -22,6 +28,42 @@ class PictureController extends Controller {
       data: res,
       done: res.length < query.limit,
     };
+  }
+  async getItemTotal() {
+    const { ctx } = this;
+    const res = await ctx.model.File.findAll();
+    console.log(res.length);
+    ctx.body = {
+      data: res.length
+    };
+  }
+  async del(){
+    const { ctx,config } = this;
+    const {id} = ctx.request.body;
+    const pic = await ctx.model.File.findByPk(id);
+    if (!pic) {
+      ctx.status = 404;
+      ctx.body = '数据库无此条目'
+      return;
+    }
+    const {path:filename} = pic;
+    const picFilePath = path.join(config.WATERFALL_PATH, filename);
+    const picSmallFilePath = path.join(config.WATERFALL_PATH, `small-${filename}`);
+    try {
+      if(fs.existsSync(picFilePath)){
+        console.log(picFilePath);
+        fs.rmSync(picFilePath)
+      }
+      if(fs.existsSync(picSmallFilePath)){
+        console.log(picSmallFilePath);
+        fs.rmSync(picSmallFilePath)
+      }
+    } catch (error) {
+      ctx.status = 400;
+      ctx.body = '图片文件删除出错'
+    }
+    await pic.destroy();
+    ctx.status = 200;
   }
   async upload() {
     const { ctx } = this;
@@ -56,8 +98,6 @@ class PictureController extends Controller {
         // 将临时文件永久保存
         const sourcePath = path.join(config.multipart.tmpdir, tmpPath);
         const destPath = path.join(config.WATERFALL_PATH, filename);
-        console.log(sourcePath, 123);
-        console.log(destPath, 123);
         const readStream = fs.createReadStream(sourcePath);
         const writeStream = fs.createWriteStream(destPath);
         readStream.pipe(writeStream);
