@@ -39,8 +39,8 @@
     "lint": "eslint .",
     "ci": "npm run lint && NODE_ENV=test npx sequelize db:migrate && npm run cov",
     "cz": "git add . && git cz",
-    "mg": "sequelize db:migrate",
-    "mgu": "sequelize db:migrate:undo:all",
+    "mg": "NODE_ENV=prod sequelize db:migrate",
+    "mgu": "NODE_ENV=prod sequelize db:migrate:undo:all",
     "mgl": "NODE_ENV=local sequelize db:migrate",
     "mglu": "NODE_ENV=local sequelize db:migrate:undo:all",
     "mgc": "sequelize migration:create"
