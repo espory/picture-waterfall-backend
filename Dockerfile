@@ -10,6 +10,7 @@ COPY pnpm-lock.yaml ./
 RUN corepack enable
 # RUN npm install --global yarn
 # RUN yarn config set registry https://registry.npm.taobao.org/
+RUN pnpm config set registry https://registry.npm.taobao.org/
 RUN pnpm install --unsafe-perm
 
 COPY . .
