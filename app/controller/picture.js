@@ -14,6 +14,9 @@ class PictureController extends Controller {
     const query = {
       limit: toInt(limit),
       offset: toInt(offset),
+      order: [
+        ['timestamp', 'desc'] //降序desc，升序asc
+      ]
     };
     //用户侧只返回审核通过的图片
     if(!isAdmin){
@@ -21,7 +24,6 @@ class PictureController extends Controller {
         status: 'pass'
       }
     }
-    console.log(query);
     const res = await ctx.model.File.findAll(query);
     console.log(res.length);
     ctx.body = {
@@ -105,6 +107,7 @@ class PictureController extends Controller {
     const { fileInfoList } = ctx.request.body;
     console.log(fileInfoList);
     try {
+      let timestamp = new Date().getTime();
       for (let index = 0; index < fileInfoList.length; index++) {
         const fileInfo = fileInfoList[index];
         const { tmpPath, username, title, intro, type, other, status = 'pending' } = fileInfo;
@@ -121,7 +124,7 @@ class PictureController extends Controller {
           sharp(sourcePath).resize(1080).jpeg({ mozjpeg: true }).toFile(toPath)
         }
         // 数据库新增条目
-        const pic = await ctx.model.File.create({ username, path: filename, title, intro, type, other, status });
+        const pic = await ctx.model.File.create({ username, path: filename, title, intro, type, other, status,timestamp:(timestamp+index)*10000 });
         console.log(pic);
       }
     } catch (e) {

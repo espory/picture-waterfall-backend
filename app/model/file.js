@@ -1,10 +1,11 @@
 'use strict';
 
 module.exports = app => {
-  const { STRING, INTEGER, DATE } = app.Sequelize;
+  const { STRING, INTEGER, DATE, BIGINT } = app.Sequelize;
   const File = app.model.define('file', {
     id: { type: INTEGER, primaryKey: true, autoIncrement: true },
     username: STRING(150),
+    timestamp:BIGINT,
     path: STRING(200),
     title: STRING(150),
     type: STRING(150),
