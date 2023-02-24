@@ -1,6 +1,7 @@
 const { Controller } = require('egg');
 const sharp = require('sharp');
 const path = require('path');
+const { success, failure } = require('../common/index');
 const fs = require('fs');
 function toInt(str) {
   if (typeof str === 'number') return str;
@@ -26,18 +27,20 @@ class PictureController extends Controller {
     }
     const res = await ctx.model.File.findAll(query);
     console.log(res.length);
-    ctx.body = {
+    success({
+      ctx,
       data: res,
       done: res.length < query.limit,
-    };
+    });
   }
   async getItemTotal() {
     const { ctx } = this;
     const res = await ctx.model.File.findAll();
     console.log(res.length);
-    ctx.body = {
+    success({
+      ctx,
       data: res.length,
-    };
+    });
   }
 
   async update() {
@@ -46,8 +49,10 @@ class PictureController extends Controller {
     console.log(id, attrName, value);
     const pic = await ctx.model.File.findByPk(id);
     if (!pic) {
-      ctx.status = 404;
-      ctx.body = '数据库无此条目';
+      failure({
+        ctx,
+        data: '数据库无此条目',
+      });
       return;
     }
     await pic.update({ [attrName]: value });
@@ -58,13 +63,15 @@ class PictureController extends Controller {
     const { id } = ctx.request.body;
     const pic = await ctx.model.File.findByPk(id);
     if (!pic) {
-      ctx.status = 404;
-      ctx.body = '数据库无此条目';
+      failure({ ctx, data: '数据库无此条目' });
       return;
     }
     const { path: filename } = pic;
     const picFilePath = path.join(config.WATERFALL_PATH, filename);
-    const picSmallFilePath = path.join(config.WATERFALL_PATH, `small-${filename}`);
+    const picSmallFilePath = path.join(
+      config.WATERFALL_PATH,
+      `small-${filename}`
+    );
     try {
       if (fs.existsSync(picFilePath)) {
         console.log(picFilePath);
@@ -75,8 +82,10 @@ class PictureController extends Controller {
         fs.rmSync(picSmallFilePath);
       }
     } catch (error) {
-      ctx.status = 400;
-      ctx.body = '图片文件删除出错';
+      failure({
+        ctx,
+        data: '图片文件删除出错',
+      });
     }
     await pic.destroy();
     ctx.status = 200;
@@ -89,13 +98,14 @@ class PictureController extends Controller {
     try {
       const { filepath } = ctx.request.files?.[0];
       if (!filepath) {
-        ctx.status = 400;
+        this.failure('目录不存在');
       }
       // 防止服务器文件目录泄露
       const tmpPath = filepath.replace(this.config.multipart.tmpdir, '');
-      ctx.body = {
+      success({
+        ctx,
         data: { tmpPath },
-      };
+      });
     } finally {
       // 删除临时文件，由于是需要临时存储，这里进行了注释
       // 实际上通过定时器设置临时文件夹会每天进行自动清理
@@ -110,7 +120,15 @@ class PictureController extends Controller {
       const timestamp = new Date().getTime();
       for (let index = 0; index < fileInfoList.length; index++) {
         const fileInfo = fileInfoList[index];
-        const { tmpPath, username, title, intro, type, other, status = 'pending' } = fileInfo;
+        const {
+          tmpPath,
+          username,
+          title,
+          intro,
+          type,
+          other,
+          status = 'pending',
+        } = fileInfo;
         const filename = path.basename(tmpPath);
         // 将临时文件永久保存
         const sourcePath = path.join(config.multipart.tmpdir, tmpPath);
@@ -125,21 +143,31 @@ class PictureController extends Controller {
             .toFile(toPath);
         }
         // 数据库新增条目
-        const pic = await ctx.model.File.create({ username, path: filename, title, intro, type, other, status, timestamp: (timestamp + index) * 10000 });
+        const pic = await ctx.model.File.create({
+          username,
+          path: filename,
+          title,
+          intro,
+          type,
+          other,
+          status,
+          timestamp: (timestamp + index) * 10000,
+        });
         console.log(pic);
       }
     } catch (e) {
       console.log(e);
-      ctx.body = {
+      failure({
+        ctx,
         data: e,
-      };
+      });
     }
-    ctx.body = {
+    success({
+      ctx,
       status: 200,
       data: {},
-    };
+    });
   }
-
 }
 
 module.exports = PictureController;
