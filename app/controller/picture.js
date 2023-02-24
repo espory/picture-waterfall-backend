@@ -8,21 +8,21 @@ function toInt(str) {
   return parseInt(str, 10) || 0;
 }
 class PictureController extends Controller {
-  async get() {
+  async index() {
     const { ctx } = this;
-    const { limit, offset, isAdmin=false } = ctx.query;
+    const { limit, offset, isAdmin = false } = ctx.query;
     const query = {
       limit: toInt(limit),
       offset: toInt(offset),
       order: [
-        ['timestamp', 'desc'] //降序desc，升序asc
-      ]
+        [ 'timestamp', 'desc' ], // 降序desc，升序asc
+      ],
     };
-    //用户侧只返回审核通过的图片
-    if(!isAdmin){
-      query['where'] = {
-        status: 'pass'
-      }
+    // 用户侧只返回审核通过的图片
+    if (!isAdmin) {
+      query.where = {
+        status: 'pass',
+      };
     }
     const res = await ctx.model.File.findAll(query);
     console.log(res.length);
@@ -36,47 +36,47 @@ class PictureController extends Controller {
     const res = await ctx.model.File.findAll();
     console.log(res.length);
     ctx.body = {
-      data: res.length
+      data: res.length,
     };
   }
 
-  async update(){
+  async update() {
     const { ctx } = this;
     const { id, attrName, value } = ctx.request.body;
     console.log(id, attrName, value);
     const pic = await ctx.model.File.findByPk(id);
     if (!pic) {
       ctx.status = 404;
-      ctx.body = '数据库无此条目'
+      ctx.body = '数据库无此条目';
       return;
     }
-    await pic.update({ [attrName]:value });
+    await pic.update({ [attrName]: value });
     ctx.body = pic;
   }
-  async del(){
-    const { ctx,config } = this;
-    const {id} = ctx.request.body;
+  async del() {
+    const { ctx, config } = this;
+    const { id } = ctx.request.body;
     const pic = await ctx.model.File.findByPk(id);
     if (!pic) {
       ctx.status = 404;
-      ctx.body = '数据库无此条目'
+      ctx.body = '数据库无此条目';
       return;
     }
-    const {path:filename} = pic;
+    const { path: filename } = pic;
     const picFilePath = path.join(config.WATERFALL_PATH, filename);
     const picSmallFilePath = path.join(config.WATERFALL_PATH, `small-${filename}`);
     try {
-      if(fs.existsSync(picFilePath)){
+      if (fs.existsSync(picFilePath)) {
         console.log(picFilePath);
-        fs.rmSync(picFilePath)
+        fs.rmSync(picFilePath);
       }
-      if(fs.existsSync(picSmallFilePath)){
+      if (fs.existsSync(picSmallFilePath)) {
         console.log(picSmallFilePath);
-        fs.rmSync(picSmallFilePath)
+        fs.rmSync(picSmallFilePath);
       }
     } catch (error) {
       ctx.status = 400;
-      ctx.body = '图片文件删除出错'
+      ctx.body = '图片文件删除出错';
     }
     await pic.destroy();
     ctx.status = 200;
@@ -107,7 +107,7 @@ class PictureController extends Controller {
     const { fileInfoList } = ctx.request.body;
     console.log(fileInfoList);
     try {
-      let timestamp = new Date().getTime();
+      const timestamp = new Date().getTime();
       for (let index = 0; index < fileInfoList.length; index++) {
         const fileInfo = fileInfoList[index];
         const { tmpPath, username, title, intro, type, other, status = 'pending' } = fileInfo;
@@ -119,12 +119,13 @@ class PictureController extends Controller {
         const writeStream = fs.createWriteStream(destPath);
         readStream.pipe(writeStream);
         // 图片压缩 gif 压缩成本过高，暂不处理
-        if(path.extname(filename).toLocaleLowerCase()!=='.gif'){
-          const toPath = path.join(path.dirname(destPath),`small-${filename}`)
-          sharp(sourcePath).resize(1080).jpeg({ mozjpeg: true }).toFile(toPath)
+        if (path.extname(filename).toLocaleLowerCase() !== '.gif') {
+          const toPath = path.join(path.dirname(destPath), `small-${filename}`);
+          sharp(sourcePath).resize(1080).jpeg({ mozjpeg: true })
+            .toFile(toPath);
         }
         // 数据库新增条目
-        const pic = await ctx.model.File.create({ username, path: filename, title, intro, type, other, status,timestamp:(timestamp+index)*10000 });
+        const pic = await ctx.model.File.create({ username, path: filename, title, intro, type, other, status, timestamp: (timestamp + index) * 10000 });
         console.log(pic);
       }
     } catch (e) {
